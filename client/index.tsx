@@ -6,15 +6,15 @@ import * as ReactDOM from 'react-dom';
 import './index.scss';
 import Chatkit from '@pusher/chatkit-client';
 import RoomList from './components/RoomList';
-import MessageList, {IMassage} from './components/MessageList';
+import MessageList, {IMessage} from './components/MessageList';
 import SendMessageForm from './components/SendMessageForm';
 import NewRoomForm from './components/NewRoomForm';
 import { tokenUrl, instanceLocator } from './chatkit'
 
 interface IState {
-  roomId: number
+  roomId: string
   currentUser: any //set state of curent user
-  messages: IMassage[] //state of messages
+  messages: IMessage[] //state of messages
 }
 //State is private to a component
 //props is is not provate and is shared between compoents
@@ -24,7 +24,7 @@ class App extends React.Component<{}, IState> {
   constructor(props) {
     super(props)
     this.state = {
-      roomId: 20580718,
+      roomId: "20580718",
       currentUser: null,
       messages: []// set to an empty array
     }
@@ -44,11 +44,13 @@ class App extends React.Component<{}, IState> {
     chatManager.connect().then(currentUser => {
       this.setState({ currentUser });
       currentUser.subscribeToRoom({
-        roomId: this.state.roomId.toString(),
+        roomId: this.state.roomId,// set state of roomId to current roomId
+        messageLimit: 5,
         hooks: {
-          onMessage: (message: IMassage) => {
+          onMessage: (message: IMessage) => {//importtant for diplay messages
             let messages = this.state.messages
             messages.push(message)
+            this.setState({ messages })
             //this.setState({messages})
             console.log(message)
           }
@@ -72,12 +74,9 @@ class App extends React.Component<{}, IState> {
 
   }
 
-  sendMessage(text: string) {
-    this.state.currentUser.sendMessage({
-      text,
-      roomId: this.state.roomId.toString()
-    })
-
+  sendMessage(text: string) {//apon submit 
+    const { roomId } = this.state// roomId will the be the crrent state
+    this.state.currentUser.sendMessage({ text, roomId})//
     //need to use inverse data flow
   }
 
@@ -89,7 +88,7 @@ class App extends React.Component<{}, IState> {
       <div className="main">
         <RoomList />
         <MessageList messages={this.state.messages}/> {/*how you pass down props to component*/}
-        <SendMessageForm sendMessage={this.sendMessage.bind(this)}/>
+        <SendMessageForm sendMessage={this.sendMessage.bind(this)}/>{/*inverse data flow binded this to sendMessage*/}
         <NewRoomForm/>
       </div>
     );

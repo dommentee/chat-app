@@ -30,6 +30,9 @@ body {
 }
 .message-list {
   grid-area: m;
+  width: 100%;
+  height: 100%;
+  overflow: scroll;
 }
 .new-room-form {
   grid-area: n;

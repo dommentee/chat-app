@@ -21,7 +21,7 @@ class SendMessageForm extends React.Component<IProps, IState> {
   handleSubmit(event) {
     event.preventDefault();
     console.log(this.state.message)
-    this.props.sendMessage(this.state.message)
+    this.props.sendMessage(this.state.message)//give acces to sendMessage from sendMessage in index.tsx 
     this.setState({ message: '' });
   }
 
